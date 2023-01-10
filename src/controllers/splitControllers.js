@@ -36,16 +36,12 @@ exports.postSplit = async (req,res) => {
 
         const isPresent = await splitModel.findOne({trxnId:data.trxnId},{userName:data.userName});
         if (isPresent){
-            // console.log("data in if statement"+JSON.stringify(data))
             split = await splitModel.findOneAndUpdate({trxnId:data.trxnId, userName:data.userName},{amount:data.amount});
-            oldSplit = split.amount;
-            // console.log("split updated")
+            oldSplit = split.amount; 
         }
-        else{
-            // console.log("data in else statement"+JSON.stringify(data))
+        else{      
             split = await splitModel.create(data);
             oldSplit=0;
-            // console.log("split created")
         }   
 
         //updating user's budget and expenditure
@@ -55,7 +51,7 @@ exports.postSplit = async (req,res) => {
         
         if(newBudget>=0){
             userToFind = await userModel.findByIdAndUpdate(userToFind._id, {monthlyBudget:newBudget,monthlyExpenditure:newExpenditure})
-            // const trxn= await trxnModel.findByIdAndUpdate(trxnId,{amount:data.amount})
+            
             res.status(200).json({status:true,split,msg:"Transaction split created"})
         }
         else{
