@@ -72,18 +72,22 @@ exports.postSplit = async (req,res) => {
 exports.deleteSplit = async (req,res) => {
     try{
         const data=req.body;
-        let trxnToFind = await trxnModel.find({trxnId:data.trxnId});
+        let trxnToFind = await trxnModel.findOne({trxnId:data.trxnId});
+        let userToFind = await userModel.findOne(trxnToFind.userId)  
         if(!trxnToFind){
             return res.status(404).json({status:false, msg:"Transaction dosen't exist"})
         }
 
-        let splitToDelete = await splitModel.findOneAndDelete({trxnId:trxnToFind.id},{userName});
-        if(splitToDelete){
-            res.status(200).json({status:true,splitToDelete, msg:"split deleted"})
+        let splitToDelete = await splitModel.findOneAndDelete({trxnId:data.trxnId},{userName:data.userName});
+        if (!splitToDelete){
+            return res.status(404).json({status:false, msg:"split dosen't exist or incorrect username"})
         }
-        else{
-            res.status(404).json({status:false,splitToDelete, msg:"split dosen't exist or used wrong username"})
-        }
+        let newBudget = parseInt(userToFind.monthlyBudget - (splitToDelete.amount))
+        let newExpenditure = parseInt(userToFind.monthlyExpenditure + (splitToDelete.amount))
+        userToFind = await userModel.findByIdAndUpdate(userToFind._id, {monthlyBudget:newBudget,monthlyExpenditure:newExpenditure})
+
+        res.status(200).json({status:true,msg:"Transaction split deleted"})
+
         
     }
     catch(err){

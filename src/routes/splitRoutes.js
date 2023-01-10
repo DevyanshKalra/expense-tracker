@@ -4,7 +4,7 @@ const router = express.Router();
 
 
 router.route("/")
-		.get(getSplit)
+	.get(getSplit)
         .post(postSplit)
 
 router.route("/update")
