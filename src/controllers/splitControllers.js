@@ -100,12 +100,13 @@ exports.deleteSplit = async (req,res) => {
 exports.updateIsPaid = async(req,res) => {
     try{
         const data=req.body;
-        let trxnToFind = await trxnModel.find({trxnId:data.trxnId});
+        let trxnToFind = await trxnModel.findOne({trxnId:data.trxnId});
         if(!trxnToFind){
             return res.status(404).json({status:false, msg:"Transaction dosen't exist"})
         }
-
-        let splitToUpdate = await splitModel.findOneAndUpdate({trxnId:trxnToFind.id},{userName},{isPaid:!isPaid});
+        console.log(trxnToFind.id)
+        let splitToUpdate = await splitModel.findOneAndUpdate({trxnId:trxnToFind.id,userName:data.userName},{isPaid:req.body.isPaid});
+        console.log(splitToUpdate)
         if(splitToUpdate){
             res.status(200).json({status:true,splitToUpdate, msg:"split updated"})
         }

@@ -5,7 +5,7 @@ exports.registerUser = async (req,res) =>{
     try{
         const data = req.body;
         console.log(data)
-        const isPresent = await userModel.findOne(req.body.email);
+        const isPresent = await userModel.findOne({userEmail:data.userEmail});
         if(isPresent){
             return res.status(404).json({status:false,msg:"User Already Exists"})
         }
